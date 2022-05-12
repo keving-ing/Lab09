@@ -23,6 +23,7 @@ public class Model {
 	private BordersDAO dao;
 	private Graph<Country,DefaultEdge> grafo;
 	private Map<Integer, Country> country;
+	private Set<Country> raggiungibili = new HashSet<Country>();
 	
 	
 	
@@ -30,10 +31,18 @@ public class Model {
 		dao = new BordersDAO();
 	}
 	
+	
+	
+	public Map<Integer, Country> getCountry() {
+		country = dao.loadAllCountries();
+		return country;
+	}
+
+
+
 	public void creaGrafo(int anno)
 	{
 		grafo = new SimpleGraph<Country,DefaultEdge>(DefaultEdge.class);
-		country = dao.loadAllCountries();
 		List<Country> vertici = dao.loadVertex(anno);
 		
 		Graphs.addAllVertices(grafo, vertici);
@@ -64,17 +73,29 @@ public class Model {
 		return this.grafo.edgeSet().size();
 	}
 	
-	public int getComponenteConnessa() {
+	public int getComponenteConnessa(Country c) {
 		
+		//per stamapre il numeroo di componenti connesse senza vertice di partenza
 		ConnectivityInspector<Country,DefaultEdge> connesse = new ConnectivityInspector<Country,DefaultEdge>(this.grafo);
-//		Set<Country> visitati = new HashSet<>();
-//		DepthFirstIterator<Country, DefaultEdge> it = new DepthFirstIterator<Country, DefaultEdge>(this.grafo);
-//		 while(it.hasNext())
-//		 {
-//			 visitati.add(it.next());
-//		 }
 		
-		return connesse.connectedSets().size();
+		DepthFirstIterator<Country, DefaultEdge> it = new DepthFirstIterator<Country, DefaultEdge>(this.grafo, c);
+		 while(it.hasNext())
+		 {
+			 raggiungibili.add(it.next());
+		 }
+		 
+		 return connesse.connectedSets().size();
+		
 	}
+
+
+
+	public Set<Country> getRaggiungibili() {
+		return raggiungibili;
+	}
+	
+	
+	
+	
 
 }

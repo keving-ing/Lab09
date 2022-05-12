@@ -9,6 +9,7 @@ import it.polito.tdp.borders.model.Country;
 import it.polito.tdp.borders.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
@@ -28,6 +29,10 @@ public class FXMLController {
     @FXML // fx:id="txtResult"
     private TextArea txtResult; // Value injected by FXMLLoader
 
+    @FXML
+    private ComboBox<Country> cmbCountry;
+
+    
     @FXML
     void doCalcolaConfini(ActionEvent event) {
     	
@@ -55,7 +60,23 @@ public class FXMLController {
     	{
     		txtResult.appendText(c.getNome() + " " + confini.get(c) + "\n");
     	}
-    	txtResult.appendText("Numero componenti connesse: " + model.getComponenteConnessa() +"\n");
+    	txtResult.appendText("Numero componenti connesse: " + model.getComponenteConnessa(null) +"\n");
+    }
+    
+    @FXML
+    void cerca(ActionEvent event) {
+    	
+    	if(cmbCountry.getValue()!=null)
+    	{
+    		model.getComponenteConnessa(cmbCountry.getValue());
+    		txtResult.appendText("\nSTATI RAGGIUNGIBILI da " + cmbCountry.getValue().getNome() + ":\n");
+    		
+    		for(Country c:model.getRaggiungibili())
+    		{
+    			txtResult.appendText(c.toString() + "\n");
+    		}
+    	}
+
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
@@ -67,5 +88,7 @@ public class FXMLController {
     
     public void setModel(Model model) {
     	this.model = model;
+    	cmbCountry.getItems().addAll(model.getCountry().values());
+    	
     }
 }
